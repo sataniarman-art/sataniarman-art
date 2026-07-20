@@ -3,10 +3,8 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-<<<<<<< HEAD
-=======
+
   "homepage": "https://sataniarman-art.github.io",
->>>>>>> 81818980b98121c13748a5d2950a5557dac8aec6
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
