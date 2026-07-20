@@ -1,0 +1,129 @@
+import FadeIn from '../components/FadeIn';
+
+const skills = [
+  {
+    num: '01',
+    name: 'UI/UX & Web Design',
+    desc: 'Creating clean and user friendly designs in Figma, including wireframes, prototypes, and complete website layouts. Also turning designs into web pages using HTML and CSS.',
+  },
+  {
+    num: '02',
+    name: 'Branding & Visual Identity',
+    desc: 'Creating brand designs, social media posts, and promotional graphics using Adobe Illustrator and Photoshop to help businesses build a clear and memorable identity.',
+  },
+  {
+    num: '03',
+    name: 'Frontend Development',
+    desc: 'Building responsive and functional web pages using HTML, CSS, and JavaScript, and turning design files into websites that work smoothly on different devices.',
+  },
+  {
+    num: '04',
+    name: 'AI Integration & QA',
+    desc: 'Using generative and agentic AI tools to improve design and development workflows. Also testing software, reviewing different types of AI outputs, finding issues, and automating bug reports.',
+  },
+  {
+    num: '05',
+    name: 'Motion & Content',
+    desc: 'Creating promotional videos and social media content using Microsoft Clipchamp, along with AI generated visuals that help brands maintain a strong presence across different platforms.',
+  },
+];
+
+const Skills = () => {
+  return (
+    <section
+      id="skills"
+      className="relative z-10 -mt-2 w-full overflow-hidden rounded-t-[40px] px-5 py-20 text-[#0C0C0C] sm:-mt-12 sm:rounded-t-[50px] sm:px-8 sm:py-24 md:-mt-14 md:rounded-t-[60px] md:px-10 md:py-32"
+      style={{ backgroundColor: '#FAF7F2' }}
+    >
+      {/* Ambient background — light-mode version of the same motif used in the dark sections above */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        {/* warm peach glow, top-left — visible enough to read as a deliberate wash, not just white */}
+        <div
+          className="absolute -left-[10%] -top-[14%] h-[55vh] w-[55vh] rounded-full opacity-[0.55] blur-[110px]"
+          style={{
+            background:
+              'radial-gradient(circle at 50% 50%, #F2B583 0%, transparent 72%)',
+          }}
+        />
+        {/* brand-accent glow, bottom-right — a clearer nod to the magenta/violet used elsewhere on the page */}
+        <div
+          className="absolute -right-[12%] bottom-[-18%] h-[58vh] w-[58vh] rounded-full opacity-[0.28] blur-[120px]"
+          style={{
+            background:
+              'radial-gradient(circle at 50% 50%, #B600A8 0%, transparent 72%)',
+          }}
+        />
+        {/* soft violet glow, center-right — fills the middle so the section doesn't read flat between the two corner glows */}
+        <div
+          className="absolute -right-[5%] top-[30%] h-[40vh] w-[40vh] rounded-full opacity-[0.18] blur-[130px]"
+          style={{
+            background:
+              'radial-gradient(circle at 50% 50%, #7621B0 0%, transparent 72%)',
+          }}
+        />
+        {/* dot grid, same scale as the dark sections, dark dots at a clearly visible opacity */}
+        <svg
+          className="absolute inset-0 h-full w-full"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <pattern
+              id="skillsDotGrid"
+              width="34"
+              height="34"
+              patternUnits="userSpaceOnUse"
+            >
+              <circle cx="1.1" cy="1.1" r="1.3" fill="#0C0C0C" fillOpacity="0.22" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#skillsDotGrid)" />
+        </svg>
+      </div>
+
+      <FadeIn y={40} className="relative z-10 mb-16 text-center sm:mb-20 md:mb-28">
+        <h2
+          className="font-black uppercase leading-none tracking-tight text-[#0C0C0C]"
+          style={{ fontSize: 'clamp(3rem, 12vw, 160px)' }}
+        >
+          Skills
+        </h2>
+      </FadeIn>
+
+      <div className="relative z-10 mx-auto flex max-w-5xl flex-col">
+        {skills.map((skill, i) => (
+          <FadeIn
+            key={skill.num}
+            delay={i * 0.1}
+            y={30}
+            className="flex items-center gap-6 border-b py-8 first:border-t sm:gap-10 sm:py-10 md:gap-16 md:py-12"
+            style={{ borderColor: 'rgba(169, 169, 169, 1.0)' }}
+          >
+            <span
+              className="font-black text-[#0C0C0C]"
+              style={{ fontSize: 'clamp(3rem, 10vw, 140px)' }}
+            >
+              {skill.num}
+            </span>
+            <div className="flex flex-1 flex-col gap-2 sm:gap-3">
+              <h3
+                className="font-medium uppercase leading-tight text-[#0C0C0C]"
+                style={{ fontSize: 'clamp(1rem, 2.2vw, 2.1rem)' }}
+              >
+                {skill.name}
+              </h3>
+              <p
+                className="max-w-2xl font-light leading-relaxed text-[#0C0C0C]/80"
+
+                style={{ fontSize: 'clamp(0.85rem, 1.6vw, 1.25rem)' }}
+              >
+                {skill.desc}
+              </p>
+            </div>
+          </FadeIn>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default Skills;
