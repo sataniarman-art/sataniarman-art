@@ -13,7 +13,7 @@ const experiences = [
     num: '01',
     category: 'AI / QA',
     role: 'AI Content Specialist',
-    company: 'Handshake AI — Project Hedgedog',
+    company: 'Handshake AI (Project Hedgedog)',
     date: 'Jan 2026 – Present',
     image: '/Experienceimages/image1.png',
     bullets: [
