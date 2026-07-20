@@ -1,6 +1,12 @@
 import FadeIn from '../components/FadeIn';
 import { Mail, Phone, MapPin, FileText, Linkedin } from 'lucide-react';
 
+// Get image path - handles both localhost and GitHub Pages automatically
+const getImagePath = (path: string) => {
+  const baseUrl = import.meta.env.BASE_URL;
+  return `${baseUrl}${path.startsWith('/') ? path.slice(1) : path}`;
+};
+
 const ContactSection = () => {
   return (
     <section
@@ -72,7 +78,7 @@ const ContactSection = () => {
             className="max-w-[480px] font-light leading-relaxed text-[#0C0C0C]/60"
             style={{ fontSize: 'clamp(0.9rem, 1.3vw, 1.1rem)' }}
           >
-            Let’s connect, whether you have a project, an opportunity, or just want to talk about design and development.
+            Let's connect, whether you have a project, an opportunity, or just want to talk about design and development.
           </p>
         </FadeIn>
 
@@ -139,7 +145,7 @@ const ContactSection = () => {
           {/* Resume */}
           <FadeIn y={30} delay={0.5} x={-30}>
             <a
-              href="/resume.pdf"
+              href={getImagePath('/resume.pdf')}
               target="_blank"
               rel="noreferrer"
               className="group flex items-center gap-3 rounded-2xl border-2 border-[#0C0C0C]/15 bg-white/70 p-4 backdrop-blur-sm transition-all duration-300 hover:border-[#0C0C0C]/40 hover:bg-white sm:gap-4 sm:p-5"

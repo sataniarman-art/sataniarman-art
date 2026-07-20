@@ -1,6 +1,12 @@
 import { useRef, useEffect, useState } from 'react';
 import FadeIn from '../components/FadeIn';
 
+// Get image path - handles both localhost and GitHub Pages automatically
+const getImagePath = (path: string) => {
+  const baseUrl = import.meta.env.BASE_URL;
+  return `${baseUrl}${path.startsWith('/') ? path.slice(1) : path}`;
+};
+
 const projects = [
   {
     title: 'ENDIVE PRINT',
@@ -65,7 +71,7 @@ const ProjectCard = ({ project }: { project: (typeof projects)[number] }) => {
       {/* Image */}
       <div className="aspect-[4/3] w-full overflow-hidden bg-[#0C0C0C]">
         <img
-          src={project.image}
+          src={getImagePath(project.image)}
           alt={project.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           draggable={false}

@@ -3,6 +3,12 @@ import FadeIn from '../components/FadeIn';
 import ContactButton from '../components/ContactButton';
 import MobileMenu from '../components/MobileMenu';
 
+// Get image path - handles both localhost and GitHub Pages automatically
+const getImagePath = (path: string) => {
+  const baseUrl = import.meta.env.BASE_URL;
+  return `${baseUrl}${path.startsWith('/') ? path.slice(1) : path}`;
+};
+
 const HeroSection = () => {
   const navLinks = ['About', 'Work', 'Skills', 'Experience', 'Contact'];
   const modelViewerRef = useRef<HTMLElement>(null);
@@ -181,7 +187,7 @@ const HeroSection = () => {
 
       {/* 3D Model - At bottom on desktop, centered on mobile */}
       <div
-        className="absolute left-1/2 -translate-x-1/2 z-[5] bottom-0 max-sm:bottom-auto max-sm:top-1/2 max-sm:-translate-y-1/2 max-sm:scale-[1.2] sm:translate-y-[20%]"
+        className="absolute left-1/2 -translate-x-1/2 z-[5] bottom-0 max-sm:bottom-auto max-sm:top-1/2 max-sm:-translate-y-1/2 max-sm:scale-[1] sm:translate-y-[20%]"
         style={{
           width: 'clamp(320px, 50vw, 700px)',
           height: 'clamp(500px, 90vh, 850px)',
@@ -194,7 +200,7 @@ const HeroSection = () => {
         {/* @ts-ignore - model-viewer is a custom element */}
         <model-viewer
           ref={modelViewerRef}
-          src="/model.glb"
+          src={getImagePath('/model.glb')}
           alt="3D Character by Arman"
           camera-controls={false}
           touch-action="none"
@@ -236,7 +242,7 @@ const HeroSection = () => {
             </div>
             <div className="w-px h-10 bg-gradient-to-b from-purple-500 to-orange-400 opacity-60 sm:h-20"></div>
             <img
-              src="/logo.png"
+              src={getImagePath('/logo.png')}
               alt="NJIT Logo"
               className="h-10 w-auto sm:h-20 md:h-24"
             />

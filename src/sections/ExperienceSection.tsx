@@ -1,6 +1,12 @@
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
 import FadeIn from '../components/FadeIn';
+
+// Get image path - handles both localhost and GitHub Pages automatically
+const getImagePath = (path: string) => {
+  const baseUrl = import.meta.env.BASE_URL;
+  return `${baseUrl}${path.startsWith('/') ? path.slice(1) : path}`;
+};
 
 const experiences = [
   {
@@ -106,6 +112,8 @@ const ExperienceCard = ({
     targetScale,
   ]);
 
+  const imagePath = useMemo(() => getImagePath(experience.image), [experience.image]);
+
   return (    
     <motion.div
       className="sticky top-24 flex h-[85vh] w-full items-center justify-center md:top-32"
@@ -157,7 +165,7 @@ const ExperienceCard = ({
           style={{ height: 'clamp(180px, 28vh, 320px)' }}
         >
           <img
-            src={experience.image}
+            src={imagePath}
             alt={experience.role}
             className="h-full w-full object-cover"
             draggable={false}
