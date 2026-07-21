@@ -177,7 +177,7 @@ const Work = () => {
 
   const handleMouseUp = () => {
     if (isDragging) {
-      setManualScroll((prev) => prev - dragOffset);
+      setManualScroll((prev) => prev + dragOffset);
       setDragOffset(0);
     }
     setIsDragging(false);
@@ -313,8 +313,8 @@ const Work = () => {
       {/* Scroll Controls Container */}
       <div className="relative z-10 mb-6 flex items-center justify-center gap-3 sm:mb-8 sm:gap-4">
         <button
-          onClick={() => scroll('left')}
-          aria-label="Scroll projects left"
+          onClick={() => scroll('right')}
+          aria-label="Scroll projects right"
           className="group flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#D7E2EA]/30 bg-[#1a1a1a]/50 transition-all duration-300 hover:border-[#B600A8] hover:bg-[#B600A8]/10 sm:h-12 sm:w-12"
         >
           <svg
@@ -333,8 +333,8 @@ const Work = () => {
         </span>
 
         <button
-          onClick={() => scroll('right')}
-          aria-label="Scroll projects right"
+          onClick={() => scroll('left')}
+          aria-label="Scroll projects left"
           className="group flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#D7E2EA]/30 bg-[#1a1a1a]/50 transition-all duration-300 hover:border-[#B600A8] hover:bg-[#B600A8]/10 sm:h-12 sm:w-12"
         >
           <svg
