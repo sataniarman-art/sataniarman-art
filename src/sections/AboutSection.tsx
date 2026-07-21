@@ -145,7 +145,7 @@ const AboutSection = () => {
 
         <div className="flex flex-col items-center gap-16 sm:gap-20 md:gap-24">
           <AnimatedText
-            text="I am Arman, a CS student at NJIT who genuinely loves design and code. Currently, I am a 2nd year student with my cumulative GPA being **3.85**. I spend most of my time on Figma building interfaces, then jumping into HTML, CSS, and JavaScript to actually bring them to life. I've worked with real clients on branding, web design, and AI content, and I use generative AI to do get better results faster. I also use Adobe tools like Illustrator and Photoshop to create better designs for social media posts, banners and website elements."
+            text="I am Arman, a CS student at NJIT who genuinely loves design and code. Currently, I am a 2nd year student with a cumulative GPA being **3.85**. I spend most of my time on Figma building interfaces, then jumping into HTML, CSS, and JavaScript to actually bring them to life. I've worked with real clients on branding, web design, and AI content, and I use generative AI to do get fast and better results. I also use Adobe tools like Illustrator and Photoshop to create designs for social media posts, banners and website elements."
             className="max-w-[1000px] text-justify font-medium leading-relaxed text-[#D7E2EA] text-[clamp(1.1rem,1.8vw,1.5rem)]"
           />
 

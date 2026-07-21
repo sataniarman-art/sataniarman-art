@@ -65,9 +65,24 @@ const projects = [
   },
 ];
 
-const ProjectCard = ({ project }: { project: (typeof projects)[number] }) => {
+// How many times to repeat the project list in the DOM. This just needs to be
+// large enough that 2x the measured "period" width always exceeds the widest
+// viewport we render at — the modulo math below is what actually makes the
+// loop infinite, this is only a rendering buffer.
+const REPEAT_COUNT = 6;
+
+const ProjectCard = ({
+  project,
+  innerRef,
+}: {
+  project: (typeof projects)[number];
+  innerRef?: React.Ref<HTMLDivElement>;
+}) => {
   return (
-    <div className="group block w-[240px] flex-shrink-0 overflow-hidden rounded-2xl border-2 border-transparent bg-[#1a1a1a] transition-all duration-300 hover:border-[#D7E2EA]/40 sm:w-[340px] md:w-[380px]">
+    <div
+      ref={innerRef}
+      className="group block w-[240px] flex-shrink-0 overflow-hidden rounded-2xl border-2 border-transparent bg-[#1a1a1a] transition-all duration-300 hover:border-[#D7E2EA]/40 sm:w-[340px] md:w-[380px]"
+    >
       {/* Image */}
       <div className="aspect-[4/3] w-full overflow-hidden bg-[#0C0C0C]">
         <img
@@ -97,6 +112,8 @@ const ProjectCard = ({ project }: { project: (typeof projects)[number] }) => {
   );
 };
 
+const mod = (n: number, m: number) => ((n % m) + m) % m;
+
 const Work = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -106,7 +123,13 @@ const Work = () => {
   const [dragStart, setDragStart] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
 
-
+  // Refs on the first card of set 0 and the first card of set 1. The
+  // pixel distance between them is the exact width of one full loop
+  // "period" (cards + gaps), measured live from the DOM so it stays
+  // correct across breakpoints and card-width changes.
+  const firstCardRef = useRef<HTMLDivElement>(null);
+  const secondSetFirstCardRef = useRef<HTMLDivElement>(null);
+  const [period, setPeriod] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -125,7 +148,20 @@ const Work = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-
+  // Measure the loop period whenever layout can change.
+  useEffect(() => {
+    const measure = () => {
+      if (firstCardRef.current && secondSetFirstCardRef.current) {
+        const a = firstCardRef.current.getBoundingClientRect().left;
+        const b = secondSetFirstCardRef.current.getBoundingClientRect().left;
+        const width = b - a;
+        if (width > 0) setPeriod(width);
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   // Drag to scroll - mouse events
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -141,7 +177,6 @@ const Work = () => {
 
   const handleMouseUp = () => {
     if (isDragging) {
-      // Apply drag offset to manual scroll (allow negative/unlimited scroll)
       setManualScroll((prev) => prev - dragOffset);
       setDragOffset(0);
     }
@@ -168,7 +203,8 @@ const Work = () => {
     setIsDragging(false);
   };
 
-  // Update arrow scroll to allow unlimited scrolling
+  // Arrow scroll - unbounded, state just accumulates freely; the
+  // modulo wrap at render time handles infinite looping either way.
   const scroll = (direction: 'left' | 'right') => {
     const scrollAmount = 400;
     setManualScroll((prev) =>
@@ -176,17 +212,17 @@ const Work = () => {
     );
   };
 
-  // Combined offset from parallax and manual scroll
-  const combinedOffset = offset + manualScroll + dragOffset;
+  // Combined raw offset from parallax scroll, manual scroll, and drag.
+  const rawOffset = offset + manualScroll + dragOffset - 200;
 
-  // Highly duplicated for seamless infinite loop with no empty space
-  const carouselRow = [
-    ...projects,
-    ...projects,
-    ...projects,
-    ...projects,
-    ...projects,
-  ];
+  // Wrap into [-period, 0) so the visible window always lands inside
+  // the rendered copies, no matter how far someone has scrolled or
+  // dragged in either direction. Because the pattern repeats every
+  // `period` px, the wrap point is visually seamless.
+  const combinedOffset =
+    period > 0 ? mod(rawOffset, period) - period : rawOffset;
+
+  const carouselRow = Array.from({ length: REPEAT_COUNT }).flatMap(() => projects);
 
   return (
     <section
@@ -196,7 +232,6 @@ const Work = () => {
     >
       {/* Ambient background — continues the About section's gradient/dot-grid/glow treatment */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        {/* base mood gradient: picks up About's closing tone and settles into Work's neutral charcoal */}
         <div
           className="absolute inset-0"
           style={{
@@ -204,7 +239,6 @@ const Work = () => {
               'linear-gradient(180deg, #0C1116 0%, #0D110F 18%, #0C0C0C 45%, #0C0C0C 100%)',
           }}
         />
-        {/* violet glow, top-left — exact mirror of About's bottom-left glow (same size/opacity/blur/gradient), so the seam reads as one continuous glow */}
         <div
           className="absolute -left-[12%] -top-[15%] h-[55vh] w-[55vh] rounded-full opacity-[0.2] blur-[120px]"
           style={{
@@ -212,7 +246,6 @@ const Work = () => {
               'radial-gradient(circle at 50% 50%, #2A3560 0%, transparent 70%)',
           }}
         />
-        {/* faint magenta glow, lower-right — quiet nod to the project accent color, kept low so it never fights the cards */}
         <div
           className="absolute -right-[14%] bottom-[-20%] h-[50vh] w-[50vh] rounded-full opacity-[0.12] blur-[130px]"
           style={{
@@ -220,7 +253,6 @@ const Work = () => {
               'radial-gradient(circle at 50% 50%, #7621B0 0%, transparent 70%)',
           }}
         />
-        {/* dot grid, same scale and tone as the hero/about sections, faded further here so it stays quiet behind the cards */}
         <svg
           className="absolute inset-0 h-full w-full opacity-[0.22]"
           xmlns="http://www.w3.org/2000/svg"
@@ -237,7 +269,6 @@ const Work = () => {
           </defs>
           <rect width="100%" height="100%" fill="url(#workDotGrid)" />
         </svg>
-        {/* fine grain, matching the hero/about so the texture stays consistent across both seams */}
         <svg
           className="absolute inset-0 h-full w-full opacity-[0.04] mix-blend-overlay"
           xmlns="http://www.w3.org/2000/svg"
@@ -281,7 +312,6 @@ const Work = () => {
 
       {/* Scroll Controls Container */}
       <div className="relative z-10 mb-6 flex items-center justify-center gap-3 sm:mb-8 sm:gap-4">
-        {/* Left Arrow Button */}
         <button
           onClick={() => scroll('left')}
           aria-label="Scroll projects left"
@@ -298,12 +328,10 @@ const Work = () => {
           </svg>
         </button>
 
-        {/* Helper Text */}
         <span className="select-none text-xs text-[#D7E2EA]/50 sm:text-sm">
           Drag or use arrows
         </span>
 
-        {/* Right Arrow Button */}
         <button
           onClick={() => scroll('right')}
           aria-label="Scroll projects right"
@@ -333,17 +361,27 @@ const Work = () => {
         onTouchEnd={handleTouchEnd}
         className={`relative z-10 overflow-hidden ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       >
-        {/* Single Row - infinite loop */}
+        {/* Repeated rows - infinite loop in both directions via modulo-wrapped transform */}
         <div
           className="relative flex gap-3 sm:gap-4"
           style={{
-            transform: `translateX(${combinedOffset - 200}px)`,
+            transform: `translateX(${combinedOffset}px)`,
             willChange: 'transform',
             transition: isDragging ? 'none' : 'transform 0.1s ease-out',
           }}
         >
           {carouselRow.map((project, i) => (
-            <ProjectCard key={`carousel-${i}`} project={project} />
+            <ProjectCard
+              key={`carousel-${i}`}
+              project={project}
+              innerRef={
+                i === 0
+                  ? firstCardRef
+                  : i === projects.length
+                    ? secondSetFirstCardRef
+                    : undefined
+              }
+            />
           ))}
         </div>
       </div>
