@@ -1,5 +1,5 @@
 import FadeIn from '../components/FadeIn';
-import { Mail, Phone, MapPin, FileText, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, FileText, Linkedin, Github } from 'lucide-react';
 
 // Get image path - handles both localhost and GitHub Pages automatically
 const getImagePath = (path: string) => {
@@ -173,8 +173,39 @@ const ContactSection = () => {
             </a>
           </FadeIn>
 
-          {/* LinkedIn */}
+          {/* GitHub */}
           <FadeIn y={30} delay={0.55} x={30}>
+            <a
+              href="https://github.com/sataniarman-art"
+              target="_blank"
+              rel="noreferrer"
+              className="group flex items-center gap-3 rounded-2xl border-2 border-[#0C0C0C]/15 bg-white/70 p-4 backdrop-blur-sm transition-all duration-300 hover:border-[#0C0C0C]/40 hover:bg-white sm:gap-4 sm:p-5"
+            >
+              <div
+                className="flex flex-shrink-0 items-center justify-center rounded-xl border-2 border-[#0C0C0C]/30 text-[#0C0C0C]"
+                style={{ width: 'clamp(40px, 5vw, 55px)', height: 'clamp(40px, 5vw, 55px)' }}
+              >
+                <Github size={22} strokeWidth={1.5} />
+              </div>
+              <div className="flex flex-col gap-0.5 overflow-hidden">
+                <span
+                  className="font-light uppercase tracking-widest text-[#0C0C0C]/60"
+                  style={{ fontSize: 'clamp(0.65rem, 0.9vw, 0.75rem)' }}
+                >
+                  GitHub
+                </span>
+                <span
+                  className="truncate font-medium text-[#0C0C0C] group-hover:underline"
+                  style={{ fontSize: 'clamp(0.85rem, 1.2vw, 1rem)' }}
+                >
+                  View GitHub
+                </span>
+              </div>
+            </a>
+          </FadeIn>
+
+          {/* LinkedIn */}
+          <FadeIn y={30} delay={0.6} x={-30}>
             <a
               href="https://www.linkedin.com/in/arman-satani/"
               target="_blank"
@@ -204,9 +235,9 @@ const ContactSection = () => {
             </a>
           </FadeIn>
 
-          {/* Address - Centered, spans full width */}
-          <FadeIn y={30} delay={0.6} className="col-span-1 sm:col-span-2">
-            <div className="mx-auto flex max-w-md items-center gap-3 rounded-2xl border-2 border-[#0C0C0C]/15 bg-white/70 p-4 backdrop-blur-sm sm:gap-4 sm:p-5">
+          {/* Address */}
+          <FadeIn y={30} delay={0.65} x={30}>
+            <div className="flex items-center gap-3 rounded-2xl border-2 border-[#0C0C0C]/15 bg-white/70 p-4 backdrop-blur-sm sm:gap-4 sm:p-5">
               <div
                 className="flex flex-shrink-0 items-center justify-center rounded-xl border-2 border-[#0C0C0C]/30 text-[#0C0C0C]"
                 style={{ width: 'clamp(40px, 5vw, 55px)', height: 'clamp(40px, 5vw, 55px)' }}
@@ -249,6 +280,16 @@ const ContactSection = () => {
           >
             Get In Touch
           </a>
+        </FadeIn>
+
+        {/* Copyright Footer */}
+        <FadeIn y={20} delay={0.9} className="mt-12 border-t border-[#0C0C0C]/10 pt-8 text-center sm:mt-16 sm:pt-10">
+          <p
+            className="font-light text-[#0C0C0C]/50"
+            style={{ fontSize: 'clamp(0.75rem, 0.9vw, 0.85rem)' }}
+          >
+            © {new Date().getFullYear()} Arman Satani. All rights reserved.
+          </p>
         </FadeIn>
       </div>
     </section>

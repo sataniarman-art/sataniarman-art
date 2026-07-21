@@ -99,7 +99,14 @@ const ProjectCard = ({ project }: { project: (typeof projects)[number] }) => {
 
 const Work = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(0);
+  const [manualScroll, setManualScroll] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -118,12 +125,67 @@ const Work = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Tripled for seamless looping
-  const row1 = [...projects, ...projects, ...projects];
-  const row2 = [
-    ...projects.slice().reverse(),
-    ...projects.slice().reverse(),
-    ...projects.slice().reverse(),
+
+
+  // Drag to scroll - mouse events
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStart(e.clientX);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    const delta = e.clientX - dragStart;
+    setDragOffset(delta);
+  };
+
+  const handleMouseUp = () => {
+    if (isDragging) {
+      // Apply drag offset to manual scroll (allow negative/unlimited scroll)
+      setManualScroll((prev) => prev - dragOffset);
+      setDragOffset(0);
+    }
+    setIsDragging(false);
+  };
+
+  // Touch support
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setDragStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    const delta = e.touches[0].clientX - dragStart;
+    setDragOffset(delta);
+  };
+
+  const handleTouchEnd = () => {
+    if (isDragging) {
+      setManualScroll((prev) => prev - dragOffset);
+      setDragOffset(0);
+    }
+    setIsDragging(false);
+  };
+
+  // Update arrow scroll to allow unlimited scrolling
+  const scroll = (direction: 'left' | 'right') => {
+    const scrollAmount = 400;
+    setManualScroll((prev) =>
+      direction === 'left' ? prev - scrollAmount : prev + scrollAmount
+    );
+  };
+
+  // Combined offset from parallax and manual scroll
+  const combinedOffset = offset + manualScroll + dragOffset;
+
+  // Highly duplicated for seamless infinite loop with no empty space
+  const carouselRow = [
+    ...projects,
+    ...projects,
+    ...projects,
+    ...projects,
+    ...projects,
   ];
 
   return (
@@ -217,30 +279,73 @@ const Work = () => {
         <div className="mx-auto mt-4 h-[2px] w-14 bg-gradient-to-r from-[#B600A8] to-[#7621B0] sm:mt-6 sm:w-16" />
       </FadeIn>
 
-      {/* Row 1 - moves right */}
-      <div
-        className="relative z-10 mb-3 flex gap-3 sm:mb-4 sm:gap-4"
-        style={{
-          transform: `translateX(${offset - 200}px)`,
-          willChange: 'transform',
-        }}
-      >
-        {row1.map((project, i) => (
-          <ProjectCard key={`r1-${i}`} project={project} />
-        ))}
+      {/* Scroll Controls Container */}
+      <div className="relative z-10 mb-6 flex items-center justify-center gap-3 sm:mb-8 sm:gap-4">
+        {/* Left Arrow Button */}
+        <button
+          onClick={() => scroll('left')}
+          aria-label="Scroll projects left"
+          className="group flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#D7E2EA]/30 bg-[#1a1a1a]/50 transition-all duration-300 hover:border-[#B600A8] hover:bg-[#B600A8]/10 sm:h-12 sm:w-12"
+        >
+          <svg
+            className="h-5 w-5 transition-colors duration-300 group-hover:text-[#B600A8] sm:h-6 sm:w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        {/* Helper Text */}
+        <span className="select-none text-xs text-[#D7E2EA]/50 sm:text-sm">
+          Drag or use arrows
+        </span>
+
+        {/* Right Arrow Button */}
+        <button
+          onClick={() => scroll('right')}
+          aria-label="Scroll projects right"
+          className="group flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#D7E2EA]/30 bg-[#1a1a1a]/50 transition-all duration-300 hover:border-[#B600A8] hover:bg-[#B600A8]/10 sm:h-12 sm:w-12"
+        >
+          <svg
+            className="h-5 w-5 transition-colors duration-300 group-hover:text-[#B600A8] sm:h-6 sm:w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
-      {/* Row 2 - moves left */}
+      {/* Carousel Container */}
       <div
-        className="relative z-10 flex gap-3 sm:gap-4"
-        style={{
-          transform: `translateX(${-(offset - 200)}px)`,
-          willChange: 'transform',
-        }}
+        ref={containerRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className={`relative z-10 overflow-hidden ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
       >
-        {row2.map((project, i) => (
-          <ProjectCard key={`r2-${i}`} project={project} />
-        ))}
+        {/* Single Row - infinite loop */}
+        <div
+          className="relative flex gap-3 sm:gap-4"
+          style={{
+            transform: `translateX(${combinedOffset - 200}px)`,
+            willChange: 'transform',
+            transition: isDragging ? 'none' : 'transform 0.1s ease-out',
+          }}
+        >
+          {carouselRow.map((project, i) => (
+            <ProjectCard key={`carousel-${i}`} project={project} />
+          ))}
+        </div>
       </div>
     </section>
   );
