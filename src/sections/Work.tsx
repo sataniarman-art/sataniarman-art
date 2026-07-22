@@ -63,6 +63,26 @@ const projects = [
     category: 'Business Card Print Design',
     image: '/marquee/image-10.jpg',
   },
+  {
+    title: 'ENDIVE IMS',
+    category: 'Email Template Design',
+    image: '/marquee/image-12.jpg',
+  },
+  {
+    title: 'SHADES OF BEAUTY',
+    category: 'Flyer Print Design',
+    image: '/marquee/image-13.jpg',
+  },
+  {
+    title: 'SANCTUARY HAIR & SKINCARE',
+    category: 'Social Media Post',
+    image: '/marquee/image-14.jpg',
+  },
+  {
+    title: 'FAMOUS SAMOSA',
+    category: 'Menu Card Design',
+    image: '/marquee/image-15.jpg',
+  },
 ];
 
 // How many times to repeat the project list in the DOM. This just needs to be
@@ -74,9 +94,11 @@ const REPEAT_COUNT = 6;
 const ProjectCard = ({
   project,
   innerRef,
+  onImageClick,
 }: {
   project: (typeof projects)[number];
   innerRef?: React.Ref<HTMLDivElement>;
+  onImageClick?: () => void;
 }) => {
   return (
     <div
@@ -84,7 +106,10 @@ const ProjectCard = ({
       className="group block w-[240px] flex-shrink-0 overflow-hidden rounded-2xl border-2 border-transparent bg-[#1a1a1a] transition-all duration-300 hover:border-[#D7E2EA]/40 sm:w-[340px] md:w-[380px]"
     >
       {/* Image */}
-      <div className="aspect-[4/3] w-full overflow-hidden bg-[#0C0C0C]">
+      <div
+        className="aspect-[4/3] w-full overflow-hidden bg-[#0C0C0C] cursor-pointer"
+        onClick={onImageClick}
+      >
         <img
           src={getImagePath(project.image)}
           alt={project.title}
@@ -112,6 +137,119 @@ const ProjectCard = ({
   );
 };
 
+// Lightbox Modal Component
+const ImageModal = ({
+  isOpen,
+  project,
+  onClose,
+}: {
+  isOpen: boolean;
+  project: (typeof projects)[number] | null;
+  onClose: () => void;
+}) => {
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !project) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fadeIn"
+      onClick={onClose}
+    >
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
+
+      <div
+        className="relative max-w-4xl w-full max-h-[90vh] bg-[#1a1a1a] rounded-2xl overflow-hidden border-2 border-[#D7E2EA]/20 shadow-2xl animate-scaleIn"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          animation: 'scaleIn 0.3s ease-out',
+        }}
+      >
+        <style>{`
+          @keyframes scaleIn {
+            from {
+              opacity: 0;
+              transform: scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+        `}</style>
+
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 flex items-center justify-center w-10 h-10 bg-[#0C0C0C]/80 hover:bg-[#B600A8]/20 rounded-full border border-[#D7E2EA]/30 transition-all duration-300"
+          aria-label="Close image viewer"
+        >
+          <svg
+            className="w-6 h-6 text-[#D7E2EA]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        {/* Image Container */}
+        <div className="w-full h-full flex items-center justify-center bg-[#0C0C0C]">
+          <img
+            src={getImagePath(project.image)}
+            alt={project.title}
+            className="w-full h-full object-contain"
+          />
+        </div>
+
+        {/* Project Info Footer */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0C0C0C] to-transparent p-6">
+          <h3 className="text-white font-bold uppercase text-lg sm:text-xl">
+            {project.title}
+          </h3>
+          <p className="text-[#B600A8] font-light text-sm sm:text-base">
+            {project.category}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 
 const Work = () => {
@@ -122,6 +260,8 @@ const Work = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
+  const [selectedProject, setSelectedProject] = useState<(typeof projects)[number] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Refs on the first card of set 0 and the first card of set 1. The
   // pixel distance between them is the exact width of one full loop
@@ -210,6 +350,18 @@ const Work = () => {
     setManualScroll((prev) =>
       direction === 'left' ? prev - scrollAmount : prev + scrollAmount
     );
+  };
+
+  // Open modal with selected project
+  const openModal = (project: (typeof projects)[number]) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedProject(null), 300);
   };
 
   // Combined raw offset from parallax scroll, manual scroll, and drag.
@@ -374,6 +526,7 @@ const Work = () => {
             <ProjectCard
               key={`carousel-${i}`}
               project={project}
+              onImageClick={() => openModal(project)}
               innerRef={
                 i === 0
                   ? firstCardRef
@@ -385,6 +538,13 @@ const Work = () => {
           ))}
         </div>
       </div>
+
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={isModalOpen}
+        project={selectedProject}
+        onClose={closeModal}
+      />
     </section>
   );
 };
