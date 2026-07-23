@@ -200,7 +200,7 @@ const HeroSection = () => {
         {/* @ts-ignore - model-viewer is a custom element */}
         <model-viewer
           ref={modelViewerRef}
-          src={getImagePath('/model.glb')}
+          src={getImagePath('/model_dracoonly.glb')}
           alt="3D Character by Arman"
           camera-controls={false}
           touch-action="none"
