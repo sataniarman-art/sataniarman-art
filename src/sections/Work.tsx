@@ -337,7 +337,7 @@ const Work = () => {
 
   const handleTouchEnd = () => {
     if (isDragging) {
-      setManualScroll((prev) => prev - dragOffset);
+      setManualScroll((prev) => prev + dragOffset);
       setDragOffset(0);
     }
     setIsDragging(false);
