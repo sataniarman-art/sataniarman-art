@@ -203,7 +203,7 @@ const HeroSection = () => {
           src={getImagePath('/model_dracoonly.glb')}
           alt="3D Character by Arman"
           camera-controls={false}
-          touch-action="none"
+          touch-action="pan-y"
           disable-zoom={true}
           disable-pan={true}
           shadow-intensity="1.5"
@@ -214,6 +214,8 @@ const HeroSection = () => {
             width: '100%',
             height: '100%',
             backgroundColor: 'transparent',
+            pointerEvents: 'none',
+            touchAction: 'pan-y',
           }}
         />
       </div>
